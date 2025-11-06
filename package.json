@@ -1,0 +1,17 @@
+{
+  "name": "neumann-blind-chess",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "npm run dev --prefix chess-react",
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix chess-react",
+    "start:server": "npm start --prefix server",
+    "build": "npm run build --prefix chess-react",
+    "install:all": "npm install && npm install --prefix chess-react && npm install --prefix server"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "react-chessboard": "^5.8.3"
+  }
+}
