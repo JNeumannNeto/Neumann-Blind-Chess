@@ -120,21 +120,57 @@ export default function GamePage() {
 	};
 
 	const playAlertSound = () => {
-		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-		const oscillator = audioContext.createOscillator();
-		const gainNode = audioContext.createGain();
-		
-		oscillator.connect(gainNode);
-		gainNode.connect(audioContext.destination);
-		
-		oscillator.frequency.value = 800;
-		oscillator.type = 'sine';
-		
-		gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-		gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-		
-		oscillator.start(audioContext.currentTime);
-		oscillator.stop(audioContext.currentTime + 0.5);
+		try {
+			// Tentar criar AudioContext
+			const AudioContext = window.AudioContext || window.webkitAudioContext;
+			
+			if (!AudioContext) {
+				// Fallback: vibração no mobile
+				if ('vibrate' in navigator) {
+					navigator.vibrate([200, 100, 200]);
+				}
+				return;
+			}
+
+			const audioContext = new AudioContext();
+			
+			// Verificar se o contexto está suspenso (comum em mobile)
+			if (audioContext.state === 'suspended') {
+				audioContext.resume().then(() => {
+					playSound(audioContext);
+				});
+			} else {
+				playSound(audioContext);
+			}
+			
+			function playSound(ctx) {
+				const oscillator = ctx.createOscillator();
+				const gainNode = ctx.createGain();
+				
+				oscillator.connect(gainNode);
+				gainNode.connect(ctx.destination);
+				
+				oscillator.frequency.value = 800;
+				oscillator.type = 'sine';
+				
+				gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+				gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+				
+				oscillator.start(ctx.currentTime);
+				oscillator.stop(ctx.currentTime + 0.5);
+				
+				// Adicionar vibração também (se disponível)
+				if ('vibrate' in navigator) {
+					navigator.vibrate(200);
+				}
+			}
+		} catch (error) {
+			// Se der erro, tentar vibração como fallback
+			console.log('Erro ao tocar som, usando vibração:', error);
+			if ('vibrate' in navigator) {
+				navigator.vibrate([200, 100, 200]);
+			}
+		}
 	};
 
 	const getPieceName = (pieceType, color) => {
@@ -544,13 +580,15 @@ export default function GamePage() {
 	const getNotificationStyle = (type) => {
 		const baseStyle = {
 			marginBottom: 8,
-			padding: 10,
+			padding: isMobile ? 12 : 10,
 			borderRadius: 6,
-			fontSize: 13,
+			fontSize: isMobile ? 14 : 13,
 			fontWeight: "bold",
 			textAlign: "center",
 			animation: "slideIn 0.3s ease-out",
-			boxShadow: "0 4px 8px rgba(0,0,0,0.2)"
+			boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+			position: 'relative',
+			zIndex: 1000
 		};
 
 		if (type === 'checkmate') {
@@ -559,7 +597,7 @@ export default function GamePage() {
 				backgroundColor: "#d32f2f",
 				color: "white",
 				border: "3px solid #b71c1c",
-				fontSize: 14
+				fontSize: isMobile ? 16 : 14
 			};
 		} else if (type === 'draw') {
 			return {
@@ -567,7 +605,7 @@ export default function GamePage() {
 				backgroundColor: "#ff9800",
 				color: "white",
 				border: "3px solid #f57c00",
-				fontSize: 14
+				fontSize: isMobile ? 16 : 14
 			};
 		} else if (type === 'promotion') {
 			return {
@@ -580,12 +618,14 @@ export default function GamePage() {
 			return {
 				...baseStyle,
 				backgroundColor: "#fff3e0",
+				color: "#e65100",
 				border: "2px solid #ff9800"
 			};
 		} else {
 			return {
 				...baseStyle,
 				backgroundColor: "#ffebee",
+				color: "#c62828",
 				border: "2px solid #f44336"
 			};
 		}
@@ -723,6 +763,32 @@ export default function GamePage() {
 				)
 			),
 
+			// Notificações - Sempre visíveis no topo (fora do layout principal)
+			notifications.length > 0 && React.createElement('div', {
+				style: { 
+					marginBottom: 15,
+					width: '100%',
+					display: 'flex',
+					flexDirection: 'column',
+					gap: '8px'
+				}
+			},
+				notifications.map((notification) =>
+					React.createElement('div', {
+						key: notification.id,
+						style: getNotificationStyle(notification.type)
+					},
+						React.createElement('div', { style: { fontSize: isMobile ? '24px' : '20px', marginBottom: 4 } },
+							notification.type === 'checkmate' ? '?' : 
+							notification.type === 'draw' ? '?' :
+							notification.type === 'promotion' ? '?' :
+							notification.type === 'capture' ? '?' : '?'
+						),
+						notification.message
+					)
+				)
+			),
+
 			// Layout responsivo: coluna em mobile, linha em desktop
 			React.createElement('div', { 
 				style: { 
@@ -783,26 +849,6 @@ export default function GamePage() {
 					},
 						React.createElement('strong', null, "Xadrez as Cegas: "),
 						"Voce so pode ver suas proprias pecas. As pecas do adversario estao ocultas mas ainda no tabuleiro!"
-					),
-
-					// Renderizar multiplas notificacoes
-					notifications.length > 0 && React.createElement('div', {
-						style: { marginBottom: 16 }
-					},
-						notifications.map((notification) =>
-							React.createElement('div', {
-								key: notification.id,
-								style: getNotificationStyle(notification.type)
-							},
-								React.createElement('div', { style: { fontSize: "20px", marginBottom: 4 } },
-									notification.type === 'checkmate' ? '\u2620' : 
-									notification.type === 'draw' ? '\u267B' :
-									notification.type === 'promotion' ? '\u2B06' :
-									notification.type === 'capture' ? '\u2620' : '\u26A0'
-								),
-								notification.message
-							)
-						)
 					),
 
 					// Seção de peças do adversário
