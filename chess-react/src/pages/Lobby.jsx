@@ -55,22 +55,37 @@ const handleClickOutside = (event) => {
   }, []);
 
   const checkForNewInvites = async () => {
- try {
- const response = await getPendingGames();
+    try {
+   const response = await getPendingGames();
       const data = response.data;
       
-    setDirectChallenges(data.directChallenges || []);
-      setOpenChallenges(data.openChallenges || []);
-      setMyChallenges(data.myChallenges || []);
+      setDirectChallenges(data.directChallenges || []);
+ setOpenChallenges(data.openChallenges || []);
+    
+      // Verificar se algum dos meus desafios foi aceito
+      const previousMyChallenges = myChallenges;
+ const currentMyChallenges = data.myChallenges || [];
+      
+    setMyChallenges(currentMyChallenges);
+   
+      // Se tinha desafios pendentes e agora não tem mais, foi aceito!
+ if (previousMyChallenges.length > 0 && currentMyChallenges.length === 0) {
+        // Verificar se há jogo ativo agora
+        if (data.activeGames && data.activeGames.length > 0) {
+          // Desafio foi aceito! Redirecionar para o jogo
+     navigate(`/game/${data.activeGames[0]._id}`);
+          return;
+        }
+      }
       
       // Atualizar currentGame se houver jogo ativo
       if (data.activeGames && data.activeGames.length > 0) {
-        setCurrentGame(data.activeGames[0]);
+  setCurrentGame(data.activeGames[0]);
       } else {
-    setCurrentGame(null);
+     setCurrentGame(null);
       }
     } catch (err) {
- // Silencioso
+      // Silencioso
     }
   };
 

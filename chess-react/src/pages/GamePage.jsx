@@ -20,9 +20,24 @@ export default function GamePage() {
 	const [gameData, setGameData] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const [myColor, setMyColor] = useState(null);
+	const [showOpponentPieces, setShowOpponentPieces] = useState(false);
+	const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 	const pollingInterval = useRef(null);
 	// Controle de ID para notificações
 	const notificationIdCounter = useRef(0);
+
+	useEffect(() => {
+		// Detectar mudanças de tamanho da tela
+		const handleResize = () => {
+			setIsMobile(window.innerWidth <= 768);
+		};
+
+		window.addEventListener('resize', handleResize);
+		
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	}, []);
 
 	useEffect(() => {
 		loadGame();
@@ -603,38 +618,67 @@ export default function GamePage() {
 	const myColorName = myColor === 'white' ? 'Brancas' : 'Pretas';
 	const opponent = gameData.whitePlayer._id === user._id ? gameData.blackPlayer : gameData.whitePlayer;
 
-	return React.createElement('div', { style: { padding: '20px', background: '#f5f7fa', minHeight: '100vh' } },
-		React.createElement('div', { style: { maxWidth: '1000px', margin: '0 auto' } },
+	// Calcular largura do tabuleiro baseado no dispositivo
+	const boardWidth = isMobile ? Math.min(window.innerWidth - 40, 400) : 560;
+
+	return React.createElement('div', { 
+		style: { 
+			padding: isMobile ? '10px' : '20px', 
+			background: '#f5f7fa', 
+			minHeight: '100vh' 
+		} 
+	},
+		React.createElement('div', { 
+			style: { 
+				maxWidth: isMobile ? '100%' : '1000px', 
+				margin: '0 auto' 
+			} 
+		},
 			// Header
 			React.createElement('div', {
 				style: {
 					background: 'white',
-					padding: '15px 20px',
+					padding: isMobile ? '10px 15px' : '15px 20px',
 					borderRadius: '10px',
-					marginBottom: '20px',
+					marginBottom: '15px',
 					display: 'flex',
+					flexDirection: isMobile ? 'column' : 'row',
 					justifyContent: 'space-between',
-					alignItems: 'center'
+					alignItems: isMobile ? 'stretch' : 'center',
+					gap: isMobile ? '10px' : '0'
 				}
 			},
 				React.createElement('div', null,
-					React.createElement('h1', { style: { margin: 0, color: '#667eea', fontSize: '24px' } },
+					React.createElement('h1', { 
+						style: { 
+							margin: 0, 
+							color: '#667eea', 
+							fontSize: isMobile ? '18px' : '24px' 
+						} 
+					},
 						gameData.whitePlayer.username, ' vs ', gameData.blackPlayer.username
 					),
-					React.createElement('p', { style: { margin: '5px 0 0 0', fontSize: '14px', color: '#666' } },
+					React.createElement('p', { 
+						style: { 
+							margin: '5px 0 0 0', 
+							fontSize: isMobile ? '12px' : '14px', 
+							color: '#666' 
+						} 
+					},
 						'Voce joga com: ', React.createElement('strong', null, myColorName)
 					)
 				),
 				React.createElement('button', {
 					onClick: handleBackToLobby,
 					style: {
-						padding: '10px 20px',
+						padding: isMobile ? '8px 16px' : '10px 20px',
 						background: '#667eea',
 						color: 'white',
 						border: 'none',
 						borderRadius: '6px',
 						cursor: 'pointer',
-						fontWeight: 'bold'
+						fontWeight: 'bold',
+						fontSize: isMobile ? '14px' : '16px'
 					}
 				}, 'Voltar ao Lobby')
 			),
@@ -643,24 +687,25 @@ export default function GamePage() {
 			!isGameOver && React.createElement('div', {
 				style: {
 					background: isMyTurn ? 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)' : 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
-					padding: '12px 20px',
+					padding: isMobile ? '10px 15px' : '12px 20px',
 					borderRadius: '8px',
-					marginBottom: '20px',
+					marginBottom: '15px',
 					textAlign: 'center',
 					boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
 					border: isMyTurn ? '2px solid #4caf50' : '2px solid #ff9800',
 					animation: isMyTurn ? 'pulse 2s infinite' : 'none',
 					display: 'flex',
+					flexDirection: isMobile ? 'column' : 'row',
 					alignItems: 'center',
 					justifyContent: 'center',
-					gap: '12px'
+					gap: isMobile ? '5px' : '12px'
 				}
 			},
 				React.createElement('h2', { 
 					style: { 
 						margin: 0, 
 						color: 'white', 
-						fontSize: '20px',
+						fontSize: isMobile ? '16px' : '20px',
 						fontWeight: 'bold',
 						textShadow: '1px 1px 2px rgba(0,0,0,0.2)'
 					} 
@@ -670,7 +715,7 @@ export default function GamePage() {
 				React.createElement('span', { 
 					style: { 
 						color: 'white', 
-						fontSize: '14px',
+						fontSize: isMobile ? '12px' : '14px',
 						opacity: 0.9
 					} 
 				},
@@ -678,19 +723,44 @@ export default function GamePage() {
 				)
 			),
 
-			React.createElement('div', { style: { display: "flex", gap: 24 } },
-				React.createElement('div', null,
+			// Layout responsivo: coluna em mobile, linha em desktop
+			React.createElement('div', { 
+				style: { 
+					display: "flex", 
+					flexDirection: isMobile ? 'column' : 'row',
+					gap: isMobile ? 15 : 24,
+					alignItems: isMobile ? 'center' : 'flex-start'
+				} 
+			},
+				// Tabuleiro
+				React.createElement('div', { 
+					style: { 
+						width: isMobile ? '100%' : 'auto',
+						display: 'flex',
+						justifyContent: 'center'
+					}
+				},
 					React.createElement(Chessboard, {
 						position: gameState.fen,
 						onPieceDrop: handleDrop,
 						boardOrientation: boardOrientation,
 						customPieces: customPieces(),
 						areArrowsAllowed: true,
-						boardWidth: 560,
+						boardWidth: boardWidth,
 						isDraggablePiece: () => !isGameOver
 					})
 				),
-				React.createElement('div', { style: { minWidth: 280, background: 'white', padding: '20px', borderRadius: '10px' } },
+
+				// Painel lateral (desktop) ou abaixo (mobile)
+				React.createElement('div', { 
+					style: { 
+						minWidth: isMobile ? '100%' : 280,
+						width: isMobile ? '100%' : 'auto',
+						background: 'white', 
+						padding: isMobile ? '15px' : '20px', 
+						borderRadius: '10px' 
+					} 
+				},
 					React.createElement('div', { style: { marginBottom: 16 } },
 						React.createElement('strong', null, "Status: "),
 						gameState.status
@@ -735,6 +805,7 @@ export default function GamePage() {
 						)
 					),
 
+					// Seção de peças do adversário
 					React.createElement('div', { style: { marginTop: 16 } },
 						isGameOver 
 							? React.createElement('div', null,
@@ -811,10 +882,35 @@ export default function GamePage() {
 								)
 							)
 							: React.createElement('div', null,
-								React.createElement('strong', { style: { fontSize: "14px", marginBottom: 8, display: "block" } },
-									"Pecas de ", opponent.username, ":"
-								),
+								// Cabeçalho com botão de toggle (apenas mobile)
 								React.createElement('div', {
+									style: {
+										display: 'flex',
+										justifyContent: 'space-between',
+										alignItems: 'center',
+										marginBottom: 8
+									}
+								},
+									React.createElement('strong', { style: { fontSize: "14px" } },
+										"Pecas de ", opponent.username, ":"
+									),
+									isMobile && React.createElement('button', {
+										onClick: () => setShowOpponentPieces(!showOpponentPieces),
+										style: {
+											padding: '5px 10px',
+											background: showOpponentPieces ? '#f44336' : '#4caf50',
+											color: 'white',
+											border: 'none',
+											borderRadius: '4px',
+											cursor: 'pointer',
+											fontSize: '12px',
+											fontWeight: 'bold'
+										}
+									}, showOpponentPieces ? 'Ocultar' : 'Mostrar')
+								),
+								
+								// Lista de peças (sempre visível em desktop, toggle em mobile)
+								(!isMobile || showOpponentPieces) && React.createElement('div', {
 									style: { 
 										padding: 12, 
 										backgroundColor: "#f5f5f5", 
@@ -827,7 +923,7 @@ export default function GamePage() {
 										alignContent: "flex-start"
 									}
 								},
-									opponentPiecesDisplay // ? Usar o display memoizado
+									opponentPiecesDisplay
 								)
 							)
 					)
