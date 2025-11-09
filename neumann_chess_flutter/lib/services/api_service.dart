@@ -39,8 +39,9 @@ class ApiService {
     final data = _decodeUtf8(response);
         _token = data['token'];
    await _saveToken(_token!);
-        return User.fromJson(data['user']);
-  } else {
+     // Os dados do usuário vêm direto no data, não em data['user']
+  return User.fromJson(data);  // ? Removido ['user']
+      } else {
         final error = _decodeUtf8(response);
         throw Exception(error['message'] ?? 'Erro ao registrar');
       }
@@ -70,7 +71,8 @@ class ApiService {
  _token = data['token'];
         await _saveToken(_token!);
    print('Login bem-sucedido! Token salvo.');
-      return User.fromJson(data['user']);
+ // Os dados do usuário vêm direto no data, não em data['user']
+        return User.fromJson(data);  // ? Removido ['user']
       } else {
    final error = _decodeUtf8(response);
         print('Erro no login: ${error['message']}');

@@ -122,16 +122,16 @@ setState(() {
 
     // Se não há peça selecionada
     if (_selectedSquare == null) {
-  // Selecionar apenas peças da minha cor
+      // Selecionar apenas peças da minha cor
       if (piece != null && piece.color == myColorLetter) {
         final moves = _chess!.moves({'square': square});
-     print('DEBUG: Selecionando peça em $square, movimentos possíveis: $moves');
+        print('DEBUG: Selecionando peça em $square, movimentos possíveis: $moves');
 
         setState(() {
           _selectedSquare = square;
-     _legalMoves = moves
-.map((move) => _extractDestination(move))
-            .toList();
+   _legalMoves = moves
+              .map((move) => _extractDestination(move))
+              .toList();
         });
         print('DEBUG: Peça selecionada! _legalMoves=$_legalMoves');
       } else {
@@ -238,7 +238,7 @@ print('DEBUG: Selecionando outra peça da minha cor');
     'to': to,
     'piece': pieceMoving != null ? '${pieceMoving.color.name[0]}${pieceMoving.type.name}' : 'unknown',
      'captured': null,  // Não conseguimos detectar facilmente no Dart
-      'san': '$from$to',  // Notação simplificada
+      'san': '$from$to',  // Notação simples
      'fen': _chess!.fen,
         if (promotion != null) 'promotion': promotion,
       };
@@ -412,31 +412,29 @@ print('DEBUG: Selecionando outra peça da minha cor');
                                 ),
                               ),
                             ),
-                          // Peça visível com tamanho maior
+                          // Peça visível como imagem
                           if (shouldShowPiece)
-                            LayoutBuilder(
-                              builder: (context, constraints) {
-                                // Usar 60% do menor lado do quadrado
-                                final size = constraints.maxWidth * 0.6;
-                                return Center(
-                                  child: Text(
-                                    _getPieceSymbol(piece!.type, piece.color),
-                                    style: TextStyle(
-                                      fontSize: size,
-                                      height: 1.0,
-                                      color: Colors.black,
-                                      shadows: [
-                                        Shadow(
-                                          offset: const Offset(1, 1),
-                                          blurRadius: 2,
-                                          color: Colors.white.withOpacity(0.5),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+       LayoutBuilder(
+builder: (context, constraints) {
+    // Usar 80% do menor lado do quadrado para a imagem
+    final size = constraints.maxWidth * 0.8;
+            return Center(
+      child: Image.asset(
+               _getPieceImagePath(piece!.type, piece.color),
+            width: size,
+      height: size,
+                 fit: BoxFit.contain,
+   errorBuilder: (context, error, stackTrace) {
+      // Fallback para símbolo Unicode se imagem não carregar
+           return Text(
+    _getPieceSymbolFallback(piece.type, piece.color),
+          style: TextStyle(fontSize: size * 0.75),
+    );
+  },
+   ),
+         );
+            },
+           ),
                         ],
                       ),
                     ),
@@ -450,24 +448,57 @@ print('DEBUG: Selecionando outra peça da minha cor');
     );
   }
 
-  String _getPieceSymbol(chess_lib.PieceType type, chess_lib.Color color) {
-    final typeName = type.name.toUpperCase();
-    final colorName = color.name.toUpperCase();
-    final isWhite = colorName == 'WHITE';
+  String _getPieceImagePath(chess_lib.PieceType type, chess_lib.Color color) {
+    final colorPrefix = color == chess_lib.Color.WHITE ? 'w' : 'b';
+ final typeName = type.name.toLowerCase();
     
-    // Usar String.fromCharCode com códigos Unicode
-    if (typeName == 'P') {
-      return isWhite ? String.fromCharCode(0x2659) : String.fromCharCode(0x265F);  // ? : ?
-    } else if (typeName == 'N') {
-      return isWhite ? String.fromCharCode(0x2658) : String.fromCharCode(0x265E);  // ? : ?
-    } else if (typeName == 'B') {
-      return isWhite ? String.fromCharCode(0x2657) : String.fromCharCode(0x265D);  // ? : ?
-    } else if (typeName == 'R') {
-      return isWhite ? String.fromCharCode(0x2656) : String.fromCharCode(0x265C);  // ? : ?
-    } else if (typeName == 'Q') {
-      return isWhite ? String.fromCharCode(0x2655) : String.fromCharCode(0x265B);  // ? : ?
-    } else if (typeName == 'K') {
-      return isWhite ? String.fromCharCode(0x2654) : String.fromCharCode(0x265A);  // ? : ?
+    // O pacote chess retorna apenas UMA LETRA para cada tipo!
+    // k=King, q=Queen, r=Rook, b=Bishop, n=kNight, p=Pawn
+    String pieceChar;
+    switch (typeName) {
+      case 'p':  // Pawn
+        pieceChar = 'P';
+        break;
+   case 'n':  // kNight
+        pieceChar = 'N';
+        break;
+      case 'b':  // Bishop
+        pieceChar = 'B';
+        break;
+      case 'r':  // Rook
+        pieceChar = 'R';
+    break;
+  case 'q':  // Queen
+        pieceChar = 'Q';
+        break;
+      case 'k':  // King
+        pieceChar = 'K';
+        break;
+      default:
+        print('DEBUG _getPieceImagePath: TIPO DESCONHECIDO "$typeName"! Usando P como fallback');
+        pieceChar = 'P';
+    }
+    
+    return 'assets/pieces/$colorPrefix$pieceChar.png';
+  }
+
+  String _getPieceSymbolFallback(chess_lib.PieceType type, chess_lib.Color color) {
+    final typeName = type.name.toLowerCase();
+    final isWhite = color == chess_lib.Color.WHITE;
+
+    // Usar String.fromCharCode com códigos Unicode (fallback)
+  if (typeName == 'pawn') {
+      return isWhite ? String.fromCharCode(0x2659) : String.fromCharCode(0x265F);
+    } else if (typeName == 'knight') {
+   return isWhite ? String.fromCharCode(0x2658) : String.fromCharCode(0x265E);
+ } else if (typeName == 'bishop') {
+    return isWhite ? String.fromCharCode(0x2657) : String.fromCharCode(0x265D);
+    } else if (typeName == 'rook') {
+      return isWhite ? String.fromCharCode(0x2656) : String.fromCharCode(0x265C);
+    } else if (typeName == 'queen') {
+   return isWhite ? String.fromCharCode(0x2655) : String.fromCharCode(0x265B);
+    } else if (typeName == 'king') {
+      return isWhite ? String.fromCharCode(0x2654) : String.fromCharCode(0x265A);
     }
     
     return '?';
@@ -579,25 +610,24 @@ mainAxisAlignment: MainAxisAlignment.center,
  Row(
        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                children: [
-            Text(
-         'Você joga com: ${_myColor == "white" ? "Brancas" : "Pretas"}',
-   style: const TextStyle(fontWeight: FontWeight.bold),
- ),
-    Container(
-     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-   decoration: BoxDecoration(
-   color: _isMyTurn ? Colors.green : Colors.grey,
-             borderRadius: BorderRadius.circular(20),
-          ),
-        child: Text(
-           _isMyTurn ? 'SUA VEZ' : 'AGUARDANDO',
-      style: const TextStyle(
-  color: Colors.white,
-        fontWeight: FontWeight.bold,
-         ),
+                Text(
+        'Você joga com: ${_myColor == "white" ? "Brancas" : "Pretas"}',
+       style: const TextStyle(fontWeight: FontWeight.bold),
   ),
+                Container(
+       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+     decoration: BoxDecoration(
+ color: _isMyTurn ? Colors.green : Colors.grey,
+    borderRadius: BorderRadius.circular(20),
       ),
-              ],
+     child: Text(
+   _isMyTurn ? 'SUA VEZ' : 'AGUARDANDO',
+    style: const TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold),
+    ),
+       ),
+            ],
           ),
          const SizedBox(height: 8),
        Text(
@@ -651,24 +681,27 @@ style: const TextStyle(
          children: _getOpponentPieces().map((piece) {
            return Container(
     width: 45,
-         height: 45,
-       decoration: BoxDecoration(
+            height: 45,
+    decoration: BoxDecoration(
       color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
-         border: Border.all(color: Colors.grey[400]!),
-            ),
-    child: Center(
-         child: Text(
-             _getPieceSymbol(piece.type, piece.color),
-               style: const TextStyle(
-           fontSize: 28,
-          height: 1.0,
-                  color: Colors.black,
-      ),
-      ),
-   ),
-  );
-           }).toList(),
+      borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey[400]!),
+     ),
+   child: Padding(
+       padding: const EdgeInsets.all(4.0),
+         child: Image.asset(
+      _getPieceImagePath(piece.type, piece.color),
+        fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+          return Text(
+_getPieceSymbolFallback(piece.type, piece.color),
+          style: const TextStyle(fontSize: 28),
+          );
+     },
+ ),
+          ),
+     );
+        }).toList(),
       ),
         ],
       ),
