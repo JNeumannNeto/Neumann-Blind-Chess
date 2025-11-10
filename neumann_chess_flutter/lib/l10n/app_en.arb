@@ -1,0 +1,65 @@
+﻿{
+  "@@locale": "en",
+  "appTitle": "Neumann Blind Chess",
+  "youPlayAs": "You play as: {color}",
+  "@youPlayAs": {
+    "placeholders": {
+      "color": {"type": "String"}
+    }
+  },
+  "whitePieces": "White",
+  "blackPieces": "Black",
+  "yourTurn": "YOUR TURN",
+  "waiting": "WAITING",
+  "turn": "Turn: {color}",
+  "@turn": {
+    "placeholders": {
+      "color": {"type": "String"}
+    }
+  },
+  "blindChessHint": "💡 Blind Chess: Opponent pieces are hidden!",
+  "opponentPieces": "{username}'s pieces:",
+  "@opponentPieces": {
+    "placeholders": {
+      "username": {"type": "String"}
+    }
+  },
+  "refresh": "Refresh",
+  "resign": "Resign",
+  "resignTitle": "Resign?",
+  "resignConfirm": "Are you sure you want to resign?",
+  "cancel": "Cancel",
+  "gameFinished": "Game Finished",
+  "checkmate": "Checkmate! {winner} won!",
+  "@checkmate": {
+    "placeholders": {
+      "winner": {"type": "String"}
+    }
+  },
+  "stalemate": "Stalemate!",
+  "draw": "Draw!",
+  "resigned": "Game ended by resignation",
+  "gameEnded": "Game ended",
+  "backToLobby": "Back to Lobby",
+  "notYourTurn": "Not your turn!",
+  "invalidMove": "Invalid move",
+  "errorMakingMove": "Error making move: {error}",
+  "@errorMakingMove": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "errorTitle": "Error",
+  "gameNotFound": "Game not found",
+  "back": "Back",
+  "welcome": "Welcome, {username}!",
+  "@welcome": {
+    "placeholders": {
+      "username": {"type": "String"}
+    }
+  },
+  "games": "Games",
+  "victories": "Victories",
+  "defeats": "Defeats",
+  "draws": "Draws"
+}

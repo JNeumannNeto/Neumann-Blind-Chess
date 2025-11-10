@@ -1,0 +1,65 @@
+﻿{
+  "@@locale": "pt",
+  "appTitle": "Neumann Xadrez às Cegas",
+  "youPlayAs": "Você joga com: {color}",
+  "@youPlayAs": {
+    "placeholders": {
+      "color": { "type": "String" }
+    }
+  },
+  "whitePieces": "Brancas",
+  "blackPieces": "Pretas",
+  "yourTurn": "SUA VEZ",
+  "waiting": "AGUARDANDO",
+  "turn": "Turno: {color}",
+  "@turn": {
+    "placeholders": {
+      "color": { "type": "String" }
+    }
+  },
+  "blindChessHint": "💡 Xadrez às Cegas: As peças do adversário estão ocultas!",
+  "opponentPieces": "Peças de {username}:",
+  "@opponentPieces": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "refresh": "Atualizar",
+  "resign": "Desistir",
+  "resignTitle": "Desistir?",
+  "resignConfirm": "Você tem certeza que deseja desistir desta partida?",
+  "cancel": "Cancelar",
+  "gameFinished": "Jogo Finalizado",
+  "checkmate": "Xeque-mate! {winner} venceram!",
+  "@checkmate": {
+    "placeholders": {
+      "winner": { "type": "String" }
+    }
+  },
+  "stalemate": "Empate por afogamento!",
+  "draw": "Empate!",
+  "resigned": "Jogo encerrado por desistência",
+  "gameEnded": "Jogo encerrado",
+  "backToLobby": "Voltar ao Lobby",
+  "notYourTurn": "Não é sua vez!",
+  "invalidMove": "Movimento inválido",
+  "errorMakingMove": "Erro ao fazer movimento: {error}",
+  "@errorMakingMove": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "errorTitle": "Erro",
+  "gameNotFound": "Jogo não encontrado",
+  "back": "Voltar",
+  "welcome": "Bem-vindo, {username}!",
+  "@welcome": {
+    "placeholders": {
+      "username": { "type": "String" }
+    }
+  },
+  "games": "Jogos",
+  "victories": "Vitórias",
+  "defeats": "Derrotas",
+  "draws": "Empates"
+}

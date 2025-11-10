@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../models/game.dart';
+import '../l10n/app_localizations.dart';  // ✅ NOVO: Importar localizações
 
 class LobbyScreen extends StatefulWidget {
   const LobbyScreen({super.key});
@@ -60,123 +61,124 @@ final gamesResponse = await _apiService.getUserGames(user.id, limit: 5);
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;  // ✅ NOVO: Pegar traduções
     final user = Provider.of<AuthProvider>(context).user;
 
     if (_isLoading) {
       return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-  );
+      body: Center(child: CircularProgressIndicator()),
+      );
     }
 
     return Scaffold(
       appBar: AppBar(
- title: const Text('Neumann Chess'),
+        title: Text(l10n.appTitle),  // ✅ TRADUZIDO
         actions: [
-          IconButton(
-      icon: const Icon(Icons.logout),
-    onPressed: () async {
-     await Provider.of<AuthProvider>(context, listen: false).logout();
-              if (mounted) {
-   Navigator.of(context).pushReplacementNamed('/login');
-           }
+      IconButton(
+    icon: const Icon(Icons.logout),
+  onPressed: () async {
+      await Provider.of<AuthProvider>(context, listen: false).logout();
+if (mounted) {
+          Navigator.of(context).pushReplacementNamed('/login');
+      }
             },
-   ),
+          ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _loadData,
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-        children: [
-            // User Stats
-    Card(
-   child: Padding(
-   padding: const EdgeInsets.all(16),
-  child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+   child: ListView(
+        padding: const EdgeInsets.all(16),
           children: [
-     Text(
-          'Bem-vindo, ${user?.username ?? "Jogador"}!',
-         style: Theme.of(context).textTheme.headlineSmall,
-   ),
+     // User Stats
+            Card(
+         child: Padding(
+      padding: const EdgeInsets.all(16),
+child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+           children: [
+    Text(
+           l10n.welcome(user?.username ?? "Jogador"),  // ✅ TRADUZIDO
+    style: Theme.of(context).textTheme.headlineSmall,
+          ),
      const SizedBox(height: 16),
-  Row(
+     Row(
      mainAxisAlignment: MainAxisAlignment.spaceAround,
        children: [
-   _buildStatItem('Jogos', user?.stats.gamesPlayed ?? 0, Colors.blue),
-      _buildStatItem('Vit�rias', user?.stats.gamesWon ?? 0, Colors.green),
-              _buildStatItem('Derrotas', user?.stats.gamesLost ?? 0, Colors.red),
-      _buildStatItem('Empates', user?.stats.gamesDraw ?? 0, Colors.orange),
-  ],
+            _buildStatItem(l10n.games, user?.stats.gamesPlayed ?? 0, Colors.blue),  // ✅ TRADUZIDO
+   _buildStatItem(l10n.victories, user?.stats.gamesWon ?? 0, Colors.green),  // ✅ TRADUZIDO
+     _buildStatItem(l10n.defeats, user?.stats.gamesLost ?? 0, Colors.red),  // ✅ TRADUZIDO
+  _buildStatItem(l10n.draws, user?.stats.gamesDraw ?? 0, Colors.orange),  // ✅ TRADUZIDO
+            ],
+           ),
+        ],
+          ),
+              ),
          ),
-         ],
-      ),
-       ),
-    ),
 
-  if (_error.isNotEmpty)
-     Padding(
-     padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Card(
-             color: _error.contains('criado') ? Colors.green[100] : Colors.red[100],
-        child: Padding(
-               padding: const EdgeInsets.all(16),
-     child: Text(_error),
-             ),
-        ),
-    ),
-
-            // Direct Challenges
-       if (_directChallenges.isNotEmpty)
-     _buildChallengesSection(
-      'Desafios Diretos',
-     _directChallenges,
-        Colors.orange,
-        ),
-
-   // Open Challenges
-     if (_openChallenges.isNotEmpty)
-            _buildChallengesSection(
-    'Desafios Livres',
-    _openChallenges,
-  Colors.blue,
+ if (_error.isNotEmpty)
+  Padding(
+   padding: const EdgeInsets.symmetric(vertical: 8),
+     child: Card(
+ color: _error.contains('criado') ? Colors.green[100] : Colors.red[100],
+  child: Padding(
+        padding: const EdgeInsets.all(16),
+      child: Text(_error),
+                  ),
+     ),
               ),
 
-       // My Challenges
-            if (_myChallenges.isNotEmpty)
-     _buildChallengesSection(
-     'Meus Desafios',
-      _myChallenges,
-          Colors.purple,
+    // Direct Challenges
+  if (_directChallenges.isNotEmpty)
+       _buildChallengesSection(
+'Desafios Diretos',
+                _directChallenges,
+        Colors.orange,
  ),
 
-    // Create New Game Button
-          const SizedBox(height: 16),
-   ElevatedButton.icon(
-    onPressed: () {
-          // TODO: Implement create game
-       },
-      icon: const Icon(Icons.add),
-              label: const Text('Nova Partida'),
-          style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.all(16),
-        ),
-),
+      // Open Challenges
+            if (_openChallenges.isNotEmpty)
+     _buildChallengesSection(
+   'Desafios Livres',
+                _openChallenges,
+       Colors.blue,
+   ),
 
-            // Recent Games
-    if (_recentGames.isNotEmpty) ...[
-              const SizedBox(height: 24),
-    Text(
-     'Partidas Recentes',
-        style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-         ..._recentGames.map((game) => _buildGameCard(game)),
-   ],
- ],
-        ),
+            // My Challenges
+            if (_myChallenges.isNotEmpty)
+   _buildChallengesSection(
+        'Meus Desafios',
+        _myChallenges,
+     Colors.purple,
+   ),
+
+        // Create New Game Button
+      const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+           // TODO: Implement create game
+  },
+     icon: const Icon(Icons.add),
+        label: const Text('Nova Partida'),
+          style: ElevatedButton.styleFrom(
+      padding: const EdgeInsets.all(16),
+       ),
       ),
-    );
+
+     // Recent Games
+       if (_recentGames.isNotEmpty) ...[
+        const SizedBox(height: 24),
+   Text(
+    'Partidas Recentes',
+             style: Theme.of(context).textTheme.titleLarge,
+           ),
+              const SizedBox(height: 8),
+  ..._recentGames.map((game) => _buildGameCard(game)),
+   ],
+          ],
+  ),
+      ),
+  );
   }
 
   Widget _buildStatItem(String label, int value, Color color) {

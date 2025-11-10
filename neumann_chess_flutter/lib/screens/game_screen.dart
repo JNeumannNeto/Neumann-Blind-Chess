@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+ï»¿import 'package:flutter/material.dart';
 import 'package:chess/chess.dart' as chess_lib;
 import '../services/api_service.dart';
 import '../models/game.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
-import 'dart:async';  // Para usar Timer
+import 'dart:async';
+import '../l10n/app_localizations.dart';  // âœ… MUDOU: Caminho correto onde foi gerado
 
 class GameScreen extends StatefulWidget {
   final String gameId;
@@ -59,13 +60,13 @@ class _GameScreenState extends State<GameScreen> {
       print('DEBUG _loadGame: game.currentTurn=${game.currentTurn}, currentUserId=$currentUserId');
       print('DEBUG _loadGame: whitePlayer.id=${game.whitePlayer.id}, blackPlayer.id=${game.blackPlayer.id}');
 
-      // Criar instância temporária do chess para ler o turno do FEN
+      // Criar instÃ¢ncia temporÃ¡ria do chess para ler o turno do FEN
       final tempChess = chess_lib.Chess();
       if (game.currentFen.isNotEmpty) {
         tempChess.load(game.currentFen);
       }
       
-      // Detectar o turno REAL do FEN (não do game.currentTurn que está bugado)
+      // Detectar o turno REAL do FEN (nÃ£o do game.currentTurn que estÃ¡ bugado)
       final actualTurn = tempChess.turn == chess_lib.Color.WHITE ? 'white' : 'black';
       print('DEBUG _loadGame: Turno REAL detectado do FEN: $actualTurn');
 
@@ -90,7 +91,7 @@ setState(() {
         _isMyTurn = detectedIsMyTurn;
  _actualTurn = actualTurn;  // Salvar turno real
 
-     // Criar instância do chess com a posição atual
+     // Criar instÃ¢ncia do chess com a posiÃ§Ã£o atual
  _chess = chess_lib.Chess();
         if (game.currentFen.isNotEmpty) {
           _chess!.load(game.currentFen);
@@ -120,12 +121,12 @@ setState(() {
     print('DEBUG: piece no quadrado $square = ${piece?.type}, cor=${piece?.color}');
     print('DEBUG: myColorLetter=$myColorLetter');
 
-    // Se não há peça selecionada
+    // Se nÃ£o hÃ¡ peÃ§a selecionada
     if (_selectedSquare == null) {
-      // Selecionar apenas peças da minha cor
+      // Selecionar apenas peÃ§as da minha cor
       if (piece != null && piece.color == myColorLetter) {
         final moves = _chess!.moves({'square': square});
-        print('DEBUG: Selecionando peça em $square, movimentos possíveis: $moves');
+        print('DEBUG: Selecionando peÃ§a em $square, movimentos possÃ­veis: $moves');
 
         setState(() {
           _selectedSquare = square;
@@ -133,24 +134,24 @@ setState(() {
               .map((move) => _extractDestination(move))
               .toList();
         });
-        print('DEBUG: Peça selecionada! _legalMoves=$_legalMoves');
+        print('DEBUG: PeÃ§a selecionada! _legalMoves=$_legalMoves');
       } else {
-        print('DEBUG: Não é minha peça ou quadrado vazio');
+        print('DEBUG: NÃ£o Ã© minha peÃ§a ou quadrado vazio');
       }
     } else {
-      print('DEBUG: Já existe peça selecionada em $_selectedSquare');
+      print('DEBUG: JÃ¡ existe peÃ§a selecionada em $_selectedSquare');
       
-      // Já existe uma peça selecionada
+      // JÃ¡ existe uma peÃ§a selecionada
       if (_selectedSquare == square) {
-        print('DEBUG: Desselecionando peça');
-        // Desselecionar se clicar na mesma peça
+        print('DEBUG: Desselecionando peÃ§a');
+        // Desselecionar se clicar na mesma peÃ§a
         setState(() {
           _selectedSquare = null;
       _legalMoves = [];
         });
    } else if (piece != null && piece.color == myColorLetter) {
-print('DEBUG: Selecionando outra peça da minha cor');
-        // Selecionar outra peça da minha cor
+print('DEBUG: Selecionando outra peÃ§a da minha cor');
+        // Selecionar outra peÃ§a da minha cor
         setState(() {
           _selectedSquare = square;
       _legalMoves = _chess!
@@ -170,9 +171,9 @@ print('DEBUG: Selecionando outra peça da minha cor');
   print('DEBUG _extractDestination: move="$move", length=${move.length}');
     
     // Movimentos podem vir em formatos diferentes:
-    // "e2e4" (4 chars), "e7e8q" (5 chars com promoção), ou apenas "e4" (2 chars)
+    // "e2e4" (4 chars), "e7e8q" (5 chars com promoÃ§Ã£o), ou apenas "e4" (2 chars)
     
-    // Se já é apenas o destino (formato curto)
+    // Se jÃ¡ Ã© apenas o destino (formato curto)
     if (move.length == 2) {
       print('DEBUG _extractDestination: formato curto, retornando "$move"');
       return move;
@@ -192,102 +193,98 @@ print('DEBUG: Selecionando outra peça da minha cor');
   Future<void> _makeMove(String from, String to) async {
     print('DEBUG _makeMove: from=$from, to=$to, _isMyTurn=$_isMyTurn');
     
+    final l10n = AppLocalizations.of(context)!;  // âœ… NOVO: Pegar traduÃ§Ãµes
+    
     if (!_isMyTurn || _chess == null) {
-   print('DEBUG: Movimento bloqueado no _makeMove');
-      _showSnackBar('Não é sua vez!');
-  return;
-  }
+      print('DEBUG: Movimento bloqueado no _makeMove');
+      _showSnackBar(l10n.notYourTurn);  // âœ… TRADUZIDO
+      return;
+    }
 
     try {
-      // Verificar se é movimento de promoção
-   String? promotion;
+      // Verificar se Ã© movimento de promoÃ§Ã£o
+      String? promotion;
       final piece = _chess!.get(from);
-      print('DEBUG: Peça em $from = ${piece?.type}');
+      print('DEBUG: PeÃ§a em $from = ${piece?.type}');
 
       if (piece != null &&
           piece.type == chess_lib.PieceType.PAWN &&
-          ((piece.color == chess_lib.Color.WHITE && to[1] == '8') ||
-       (piece.color == chess_lib.Color.BLACK && to[1] == '1'))) {
-        promotion = 'q'; // Sempre promover para dama por enquanto
-   print('DEBUG: Movimento é promoção para dama');
+     ((piece.color == chess_lib.Color.WHITE && to[1] == '8') ||
+         (piece.color == chess_lib.Color.BLACK && to[1] == '1'))) {
+     promotion = 'q';
+      print('DEBUG: Movimento Ã© promoÃ§Ã£o para dama');
       }
 
-      print('DEBUG: Tentando fazer movimento no tabuleiro local...');
-      // Tentar fazer o movimento
+    print('DEBUG: Tentando fazer movimento no tabuleiro local...');
       final moveResult = _chess!.move({'from': from, 'to': to, 'promotion': promotion});
 
       if (moveResult == null || moveResult == false) {
-        print('DEBUG: Movimento INVÁLIDO retornado pela biblioteca chess');
-   _showSnackBar('Movimento inválido');
-    setState(() {
+        print('DEBUG: Movimento INVÃLIDO retornado pela biblioteca chess');
+        _showSnackBar(l10n.invalidMove);  // âœ… TRADUZIDO
+        setState(() {
       _selectedSquare = null;
-          _legalMoves = [];
+      _legalMoves = [];
         });
         return;
       }
 
-      print('DEBUG: Movimento válido!');
-      print('DEBUG: FEN após movimento: ${_chess!.fen}');
+      print('DEBUG: Movimento vÃ¡lido!');
+    print('DEBUG: FEN apÃ³s movimento: ${_chess!.fen}');
 
-      // Tentar obter mais dados do movimento usando get() antes e depois
-    final pieceMoving = _chess!.get(to);  // Peça que acabou de se mover
-   
-      // Enviar no mesmo formato que o React
-  final moveData = {
+      final pieceMoving = _chess!.get(to);
+      
+      final moveData = {
         'from': from,
     'to': to,
-    'piece': pieceMoving != null ? '${pieceMoving.color.name[0]}${pieceMoving.type.name}' : 'unknown',
-     'captured': null,  // Não conseguimos detectar facilmente no Dart
-      'san': '$from$to',  // Notação simples
-     'fen': _chess!.fen,
+     'piece': pieceMoving != null ? '${pieceMoving.color.name[0]}${pieceMoving.type.name}' : 'unknown',
+        'captured': null,
+        'san': '$from$to',
+        'fen': _chess!.fen,
         if (promotion != null) 'promotion': promotion,
       };
 
-      print('DEBUG: moveData que será enviado: $moveData');
+      print('DEBUG: moveData que serÃ¡ enviado: $moveData');
 
       final updatedGame = await _apiService.makeMove(
-        widget.gameId,
-      from,
-        to,
-   promotion: promotion,
+   widget.gameId,
+   from,
+ to,
+        promotion: promotion,
         moveData: moveData,
       );
 
       print('DEBUG: Movimento aceito pela API! Novo FEN: ${updatedGame.currentFen}');
       print('DEBUG: updatedGame.currentTurn = ${updatedGame.currentTurn}');
-   print('DEBUG: _myColor = $_myColor');
-      print('DEBUG: Calculando _isMyTurn: ${updatedGame.currentTurn} == $_myColor ?');
+      print('DEBUG: _myColor = $_myColor');
+  print('DEBUG: Calculando _isMyTurn: ${updatedGame.currentTurn} == $_myColor ?');
       
       final newIsMyTurn = updatedGame.currentTurn == _myColor;
- print('DEBUG: Novo _isMyTurn = $newIsMyTurn');
+      print('DEBUG: Novo _isMyTurn = $newIsMyTurn');
       
-      setState(() {
-        _game = updatedGame;
-   _isMyTurn = newIsMyTurn;
-    _selectedSquare = null;
+   setState(() {
+    _game = updatedGame;
+        _isMyTurn = newIsMyTurn;
+        _selectedSquare = null;
         _legalMoves = [];
 
- // Atualizar o tabuleiro com a nova posição do servidor
         if (updatedGame.currentFen.isNotEmpty) {
           _chess!.load(updatedGame.currentFen);
- }
-        
+    }
+  
         print('DEBUG: Estado atualizado - _isMyTurn=$_isMyTurn, _game.currentTurn=${_game!.currentTurn}');
       });
 
-      // Verificar se o jogo terminou
       final isGameActive = updatedGame.status == 'active' || updatedGame.status == 'em_andamento';
-    if (!isGameActive) {
-        _showGameEndDialog();
+      if (!isGameActive) {
+    _showGameEndDialog();
       }
     } catch (e) {
       print('DEBUG ERRO em _makeMove: $e');
-  _showSnackBar('Erro ao fazer movimento: $e');
-      // Recarregar o jogo para sincronizar
-  await _loadGame();
+      _showSnackBar(l10n.errorMakingMove(e.toString()));  // âœ… TRADUZIDO
+      await _loadGame();
       setState(() {
-   _selectedSquare = null;
-        _legalMoves = [];
+        _selectedSquare = null;
+    _legalMoves = [];
       });
     }
   }
@@ -299,38 +296,42 @@ print('DEBUG: Selecionando outra peça da minha cor');
   }
 
   void _showGameEndDialog() {
+    final l10n = AppLocalizations.of(context)!;  // âœ… NOVO: Pegar traduÃ§Ãµes
+    
     String message = '';
     switch (_game!.status) {
       case 'checkmate':
-        final winner = _game!.currentTurn == 'white' ? 'Pretas' : 'Brancas';
-        message = 'Xeque-mate! $winner venceram!';
-        break;
+      final winner = _game!.currentTurn == 'white' 
+       ? l10n.blackPieces  // âœ… TRADUZIDO
+       : l10n.whitePieces;  // âœ… TRADUZIDO
+   message = l10n.checkmate(winner);  // âœ… TRADUZIDO
+     break;
       case 'stalemate':
-        message = 'Empate por afogamento!';
+        message = l10n.stalemate;  // âœ… TRADUZIDO
         break;
       case 'draw':
-        message = 'Empate!';
+        message = l10n.draw;  // âœ… TRADUZIDO
         break;
       case 'resigned':
-        message = 'Jogo encerrado por desistência';
-        break;
+        message = l10n.resigned;  // âœ… TRADUZIDO
+  break;
       default:
-        message = 'Jogo encerrado';
+        message = l10n.gameEnded;  // âœ… TRADUZIDO (usando chave existente)
     }
 
     showDialog(
-      context: context,
+ context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Jogo Finalizado'),
-        content: Text(message),
+      title: Text(l10n.gameFinished),  // âœ… TRADUZIDO
+      content: Text(message),
         actions: [
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(); // Voltar ao lobby
+   onPressed: () {
+    Navigator.of(context).pop();
+         Navigator.of(context).pop();
             },
-            child: const Text('Voltar ao Lobby'),
+ child: Text(l10n.backToLobby),  // âœ… TRADUZIDO
           ),
         ],
       ),
@@ -368,7 +369,7 @@ print('DEBUG: Selecionando outra peça da minha cor');
                 // Determinar cor do jogador
                 final myColorLetter = _myColor == 'white' ? chess_lib.Color.WHITE : chess_lib.Color.BLACK;
 
-                // Lógica para mostrar ou ocultar peças
+                // LÃ³gica para mostrar ou ocultar peÃ§as
                 bool shouldShowPiece = false;
 
                 if (piece != null) {
@@ -412,7 +413,7 @@ print('DEBUG: Selecionando outra peça da minha cor');
                                 ),
                               ),
                             ),
-                          // Peça visível como imagem
+                          // PeÃ§a visÃ­vel como imagem
                           if (shouldShowPiece)
        LayoutBuilder(
 builder: (context, constraints) {
@@ -425,7 +426,7 @@ builder: (context, constraints) {
       height: size,
                  fit: BoxFit.contain,
    errorBuilder: (context, error, stackTrace) {
-      // Fallback para símbolo Unicode se imagem não carregar
+      // Fallback para sÃ­mbolo Unicode se imagem nÃ£o carregar
            return Text(
     _getPieceSymbolFallback(piece.type, piece.color),
           style: TextStyle(fontSize: size * 0.75),
@@ -466,7 +467,7 @@ builder: (context, constraints) {
         pieceChar = 'B';
         break;
       case 'r':  // Rook
-        pieceChar = 'R';
+    pieceChar = 'R';
     break;
   case 'q':  // Queen
         pieceChar = 'Q';
@@ -486,7 +487,7 @@ builder: (context, constraints) {
     final typeName = type.name.toLowerCase();
     final isWhite = color == chess_lib.Color.WHITE;
 
-    // Usar String.fromCharCode com códigos Unicode (fallback)
+    // Usar String.fromCharCode com cÃ³digos Unicode (fallback)
   if (typeName == 'pawn') {
       return isWhite ? String.fromCharCode(0x2659) : String.fromCharCode(0x265F);
     } else if (typeName == 'knight') {
@@ -509,7 +510,7 @@ builder: (context, constraints) {
       return [];
     }
 
-    // Verificar se o jogo está ativo
+    // Verificar se o jogo estÃ¡ ativo
     final isGameActive = _game!.status == 'active' || _game!.status == 'em_andamento';
     if (!isGameActive) {
       return [];
@@ -555,210 +556,216 @@ builder: (context, constraints) {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;  // âœ… NOVO: Pegar traduÃ§Ãµes
+    
     if (_isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
-    }
+ }
 
-    if (_error.isNotEmpty || _game == null) {
-   return Scaffold(
-        appBar: AppBar(title: const Text('Erro')),
-      body: Center(
-       child: Column(
-mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-   const Icon(Icons.error, size: 64, color: Colors.red),
-  const SizedBox(height: 16),
-    Text(_error.isNotEmpty ? _error : 'Jogo não encontrado'),
+  if (_error.isNotEmpty || _game == null) {
+      return Scaffold(
+   appBar: AppBar(title: Text(l10n.errorTitle)),  // âœ… TRADUZIDO
+        body: Center(
+   child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+children: [
+      const Icon(Icons.error, size: 64, color: Colors.red),
+ const SizedBox(height: 16),
+    Text(_error.isNotEmpty ? _error : l10n.gameNotFound),  // âœ… TRADUZIDO
           const SizedBox(height: 16),
           ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-         child: const Text('Voltar'),
-              ),
-            ],
-          ),
-        ),
+    onPressed: () => Navigator.of(context).pop(),
+  child: Text(l10n.back),  // âœ… TRADUZIDO
+    ),
+    ],
+    ),
+ ),
       );
     }
 
     final opponent = _game!.whitePlayer.id == Provider.of<AuthProvider>(context, listen: false).user?.id
-     ? _game!.blackPlayer
-        : _game!.whitePlayer;
+        ? _game!.blackPlayer
+   : _game!.whitePlayer;
+
+ final myColorText = _myColor == 'white' ? l10n.whitePieces : l10n.blackPieces;  // âœ… TRADUZIDO
+    final turnColorText = _actualTurn == 'white' ? l10n.whitePieces : l10n.blackPieces;  // âœ… TRADUZIDO
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('${_game!.whitePlayer.username} vs ${_game!.blackPlayer.username}'),
-        actions: [
+   title: Text('${_game!.whitePlayer.username} vs ${_game!.blackPlayer.username}'),
+   actions: [
           IconButton(
-          icon: const Icon(Icons.refresh),
-            onPressed: _loadGame,
-     tooltip: 'Atualizar',
-          ),
-        ],
+       icon: const Icon(Icons.refresh),
+       onPressed: _loadGame,
+      tooltip: l10n.refresh,  // âœ… TRADUZIDO
+ ),
+      ],
       ),
-  body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-      children: [
-              Card(
-  child: Padding(
-               padding: const EdgeInsets.all(16),
-       child: Column(
-                children: [
- Row(
-       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-               children: [
-                Text(
-        'Você joga com: ${_myColor == "white" ? "Brancas" : "Pretas"}',
-       style: const TextStyle(fontWeight: FontWeight.bold),
-  ),
-                Container(
-       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-     decoration: BoxDecoration(
- color: _isMyTurn ? Colors.green : Colors.grey,
-    borderRadius: BorderRadius.circular(20),
-      ),
-     child: Text(
-   _isMyTurn ? 'SUA VEZ' : 'AGUARDANDO',
-    style: const TextStyle(
-    color: Colors.white,
-    fontWeight: FontWeight.bold),
-    ),
-       ),
-            ],
-          ),
-         const SizedBox(height: 8),
-       Text(
-          'Turno: ${_actualTurn == "white" ? "Brancas" : "Pretas"}',
-          style: TextStyle(
-            color: _isMyTurn ? Colors.green : Colors.orange,
-          ),
- ),
-          if (_game!.status == 'active' || _game!.status == 'em_andamento') ...[
-          const SizedBox(height: 8),
-      const Text(
-'?? Xadrez às Cegas: As peças do adversário estão ocultas!',
-           style: TextStyle(
-   fontSize: 12,
-       fontStyle: FontStyle.italic,
-           color: Colors.blue,
- ),
-textAlign: TextAlign.center,
- ),
-         ],
-        ],
-       ),
-     ),
-       ),
-    const SizedBox(height: 16),
-  Card(
-            child: Padding(
-        padding: const EdgeInsets.all(8.0),
-      child: _buildBoard(),
-  ),
-     ),
-  const SizedBox(height: 16),
-     if (_game!.status == 'active' || _game!.status == 'em_andamento')
-     Card(
-         child: Padding(
-      padding: const EdgeInsets.all(16),
-          child: Column(
-   crossAxisAlignment: CrossAxisAlignment.start,
-             children: [
-     Text(
-     'Peças de ${opponent.username}:',
-style: const TextStyle(
-        fontWeight: FontWeight.bold,
-    fontSize: 16,
-  ),
-        ),
-     const SizedBox(height: 12),
-    Wrap(
-            spacing: 8,
-   runSpacing: 8,
-         children: _getOpponentPieces().map((piece) {
-           return Container(
-    width: 45,
-            height: 45,
-    decoration: BoxDecoration(
-      color: Colors.grey[200],
-      borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.grey[400]!),
-     ),
+      body: SingleChildScrollView(
    child: Padding(
-       padding: const EdgeInsets.all(4.0),
-         child: Image.asset(
-      _getPieceImagePath(piece.type, piece.color),
-        fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-          return Text(
-_getPieceSymbolFallback(piece.type, piece.color),
-          style: const TextStyle(fontSize: 28),
-          );
-     },
- ),
+padding: const EdgeInsets.all(16.0),
+  child: Column(
+        children: [
+   Card(
+         child: Padding(
+          padding: const EdgeInsets.all(16),
+       child: Column(
+        children: [
+       Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+         children: [
+  Text(
+  l10n.youPlayAs(myColorText),  // âœ… TRADUZIDO
+             style: const TextStyle(fontWeight: FontWeight.bold),
+   ),
+    Container(
+         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+         decoration: BoxDecoration(
+        color: _isMyTurn ? Colors.green : Colors.grey,
+       borderRadius: BorderRadius.circular(20),
+         ),
+      child: Text(
+      _isMyTurn ? l10n.yourTurn : l10n.waiting,  // âœ… TRADUZIDO
+          style: const TextStyle(
+        color: Colors.white,
+    fontWeight: FontWeight.bold),
+        ),
           ),
-     );
-        }).toList(),
-      ),
-        ],
-      ),
-    ),
-  ),
-      const SizedBox(height: 16),
-     Row(
-mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-             children: [
-     ElevatedButton.icon(
-             onPressed: _loadGame,
-    icon: const Icon(Icons.refresh),
-        label: const Text('Atualizar'),
+      ],
+     ),
+          const SizedBox(height: 8),
+         Text(
+       l10n.turn(turnColorText),  // âœ… TRADUZIDO
+     style: TextStyle(
+            color: _isMyTurn ? Colors.green : Colors.orange,
+     ),
        ),
-       ElevatedButton.icon(
-               onPressed: () {
-  showDialog(
-      context: context,
-    builder: (context) => AlertDialog(
-   title: const Text('Desistir?'),
-              content: const Text('Você tem certeza que deseja desistir desta partida?'),
-    actions: [
-         TextButton(
-        onPressed: () => Navigator.of(context).pop(),
-child: const Text('Cancelar'),
-       ),
-      TextButton(
-                 onPressed: () async {
-              Navigator.of(context).pop();
-         try {
-        await _apiService.resignGame(widget.gameId);
-     if (mounted) {
-      Navigator.of(context).pop();
-   }
-          } catch (e) {
-            _showSnackBar('Erro ao desistir: $e');
-}
-    },
-     child: const Text('Desistir', style: TextStyle(color: Colors.red)),
+  if (_game!.status == 'active' || _game!.status == 'em_andamento') ...[
+       const SizedBox(height: 8),
+          Text(
+     l10n.blindChessHint,  // âœ… TRADUZIDO
+   style: const TextStyle(
+              fontSize: 12,
+   fontStyle: FontStyle.italic,
+ color: Colors.blue,
            ),
-      ],
-             ),
-       );
-       },
-icon: const Icon(Icons.flag),
-      label: const Text('Desistir'),
-  style: ElevatedButton.styleFrom(
-     backgroundColor: Colors.red,
-         foregroundColor: Colors.white,
-          ),
-       ),
-             ],
+    textAlign: TextAlign.center,
+        ),
+     ],
+    ],
+              ),
             ),
-      ],
-),
-  ),
+    ),
+     const SizedBox(height: 16),
+ Card(
+    child: Padding(
+     padding: const EdgeInsets.all(8.0),
+        child: _buildBoard(),
+        ),
+          ),
+const SizedBox(height: 16),
+     if (_game!.status == 'active' || _game!.status == 'em_andamento')
+      Card(
+      child: Padding(
+padding: const EdgeInsets.all(16),
+        child: Column(
+ crossAxisAlignment: CrossAxisAlignment.start,
+       children: [
+    Text(
+      l10n.opponentPieces(opponent.username),  // âœ… TRADUZIDO
+              style: const TextStyle(
+     fontWeight: FontWeight.bold,
+      fontSize: 16,
+       ),
+     ),
+       const SizedBox(height: 12),
+      Wrap(
+      spacing: 8,
+        runSpacing: 8,
+        children: _getOpponentPieces().map((piece) {
+      return Container(
+    width: 45,
+           height: 45,
+decoration: BoxDecoration(
+   color: Colors.grey[200],
+       borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey[400]!),
+    ),
+            child: Padding(
+       padding: const EdgeInsets.all(4.0),
+  child: Image.asset(
+       _getPieceImagePath(piece.type, piece.color),
+   fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) {
+       return Text(
+_getPieceSymbolFallback(piece.type, piece.color),
+       style: const TextStyle(fontSize: 28),
+             );
+},
+    ),
       ),
-    );
-  }
-}
+   );
+}).toList(),
+   ),
+       ],
+      ),
+       ),
+          ),
+    const SizedBox(height: 16),
+       Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  children: [
+       ElevatedButton.icon(
+       onPressed: _loadGame,
+   icon: const Icon(Icons.refresh),
+    label: Text(l10n.refresh),  // âœ… TRADUZIDO
+         ),
+       ElevatedButton.icon(
+         onPressed: () {
+           showDialog(
+          context: context,
+   builder: (context) => AlertDialog(
+           title: Text(l10n.resignTitle),
+      content: Text(l10n.resignConfirm),
+   actions: [
+     TextButton(
+      onPressed: () => Navigator.of(context).pop(),
+    child: Text(l10n.cancel),
+ ),
+             TextButton(
+        onPressed: () async {
+            Navigator.of(context).pop();
+try {
+          await _apiService.resignGame(widget.gameId);
+              if (mounted) {
+         Navigator.of(context).pop();
+            }
+        } catch (e) {
+              _showSnackBar(l10n.errorMakingMove(e.toString()));
+               }
+      },
+          child: Text(l10n.resign, style: const TextStyle(color: Colors.red)),
+),
+           ],
+       ),
+     );
+        },
+  icon: const Icon(Icons.flag),
+    label: Text(l10n.resign),
+ style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+ foregroundColor: Colors.white,
+   ),
+      ),
+            ],  // Fecha children do Row
+ ),  // Fecha Row
+       const SizedBox(height: 16),
+        ],  // Fecha children do Column principal
+      ),  // Fecha Column
+    ),  // Fecha Padding
+    ),  // Fecha SingleChildScrollView (body)
+    );  // Fecha Scaffold
+  }  // Fecha mÃ©todo build
+}  // Fecha classe _GameScreenState
