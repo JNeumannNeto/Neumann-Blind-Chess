@@ -4,7 +4,7 @@
   "youPlayAs": "You play as: {color}",
   "@youPlayAs": {
     "placeholders": {
-      "color": {"type": "String"}
+    "color": {"type": "String"}
     }
   },
   "whitePieces": "White",
@@ -61,5 +61,22 @@
   "games": "Games",
   "victories": "Victories",
   "defeats": "Defeats",
-  "draws": "Draws"
+  "draws": "Draws",
+  "pieceCaptured": "{piece} {color} captured!",
+  "@pieceCaptured": {
+    "placeholders": {
+      "piece": {"type": "String"},
+      "color": {"type": "String"}
+    }
+  },
+  "kingInCheck": "King in check!",
+  "pawnPromoted": "Pawn promoted to Queen!",
+  "piecePawn": "pawn",
+  "pieceKnight": "knight",
+  "pieceBishop": "bishop",
+  "pieceRook": "rook",
+  "pieceQueen": "queen",
+  "pieceKing": "king",
+  "colorWhite": "white",
+  "colorBlack": "black"
 }

@@ -115,4 +115,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get draws => 'Draws';
+
+  @override
+  String pieceCaptured(String piece, String color) {
+    return '$piece $color captured!';
+  }
+
+  @override
+  String get kingInCheck => 'King in check!';
+
+  @override
+  String get pawnPromoted => 'Pawn promoted to Queen!';
+
+  @override
+  String get piecePawn => 'pawn';
+
+  @override
+  String get pieceKnight => 'knight';
+
+  @override
+  String get pieceBishop => 'bishop';
+
+  @override
+  String get pieceRook => 'rook';
+
+  @override
+  String get pieceQueen => 'queen';
+
+  @override
+  String get pieceKing => 'king';
+
+  @override
+  String get colorWhite => 'white';
+
+  @override
+  String get colorBlack => 'black';
 }

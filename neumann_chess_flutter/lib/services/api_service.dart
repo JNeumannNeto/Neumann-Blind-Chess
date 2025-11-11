@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
@@ -39,8 +39,8 @@ class ApiService {
     final data = _decodeUtf8(response);
         _token = data['token'];
    await _saveToken(_token!);
-     // Os dados do usu�rio v�m direto no data, n�o em data['user']
-  return User.fromJson(data);  // ? Removido ['user']
+     // Os dados do usuário vêm direto no data, não em data['user']
+  return User.fromJson(data);  // ✅ Removido ['user']
       } else {
         final error = _decodeUtf8(response);
         throw Exception(error['message'] ?? 'Erro ao registrar');
@@ -71,8 +71,8 @@ class ApiService {
  _token = data['token'];
         await _saveToken(_token!);
    print('Login bem-sucedido! Token salvo.');
- // Os dados do usu�rio v�m direto no data, n�o em data['user']
-        return User.fromJson(data);  // ? Removido ['user']
+ // Os dados do usuário vêm direto no data, não em data['user']
+        return User.fromJson(data);  // ✅ Removido ['user']
       } else {
    final error = _decodeUtf8(response);
         print('Erro no login: ${error['message']}');
@@ -112,20 +112,32 @@ Uri.parse('$baseUrl/auth/me'),
   // Game Methods
   Future<Game> createGame(String? opponentId, String color) async {
     await _loadToken();
-    final response = await http.post(
-      Uri.parse('$baseUrl/games'),
-      headers: _getHeaders(),
-  body: utf8.encode(jsonEncode({
+    
+    final body = {
    'opponentId': opponentId,
-        'color': color,
-      })),
+  'myColor': color,  // ✅ CORRIGIDO: Usar myColor ao invés de color
+    };
+    
+    print('DEBUG API createGame: body=$body');
+    print('DEBUG API createGame: URL=$baseUrl/games');
+    print('DEBUG API createGame: headers=${_getHeaders()}');
+    print('DEBUG API createGame: JSON=${jsonEncode(body)}');
+  
+   final response = await http.post(
+  Uri.parse('$baseUrl/games'),
+      headers: _getHeaders(),
+      body: utf8.encode(jsonEncode(body)),
     );
 
-    if (response.statusCode == 201) {
-    return Game.fromJson(_decodeUtf8(response));
+    print('DEBUG API createGame: statusCode=${response.statusCode}');
+    print('DEBUG API createGame: response=${utf8.decode(response.bodyBytes)}');
+
+  if (response.statusCode == 201) {
+      return Game.fromJson(_decodeUtf8(response));
     } else {
    final error = _decodeUtf8(response);
-      throw Exception(error['message'] ?? 'Erro ao criar jogo');
+  print('DEBUG API createGame ERRO: $error');
+    throw Exception(error['message'] ?? 'Erro ao criar jogo');
     }
   }
 
@@ -146,8 +158,8 @@ Uri.parse('$baseUrl/auth/me'),
 
   Future<void> declineGame(String gameId) async {
     await _loadToken();
-  final response = await http.post(
-      Uri.parse('$baseUrl/games/$gameId/decline'),
+    final response = await http.delete(  // ✅ CORRIGIDO: DELETE ao invés de POST
+  Uri.parse('$baseUrl/games/$gameId'),  // ✅ CORRIGIDO: Sem /decline
       headers: _getHeaders(),
     );
 
@@ -203,7 +215,7 @@ Uri.parse('$baseUrl/auth/me'),
   Future<Game> makeMove(String gameId, String from, String to, {String? promotion, Map<String, dynamic>? moveData}) async {
     await _loadToken();
     
-    // Usar moveData se fornecido, caso contr�rio usar formato antigo
+    // Usar moveData se fornecido, caso contrário usar formato antigo
   final bodyData = moveData ?? {
       'from': from,
  'to': to,
@@ -233,32 +245,55 @@ print('DEBUG API makeMove: headers=${_getHeaders()}');
   }
   }
 
-  Future<Game> resignGame(String gameId) async {
-    await _loadToken();
-    final response = await http.post(
- Uri.parse('$baseUrl/games/$gameId/resign'),
-      headers: _getHeaders(),
-    );
-
-    if (response.statusCode == 200) {
-      return Game.fromJson(_decodeUtf8(response));
-    } else {
-      final error = _decodeUtf8(response);
-      throw Exception(error['message'] ?? 'Erro ao desistir');
-    }
-  }
-
-  Future<void> endGame(String gameId, Map<String, dynamic> endData) async {
-    await _loadToken();
-  final response = await http.put(
+  // Desistir de um jogo
+  Future<void> resignGame(String gameId) async {
+    await _loadToken();  // ✅ CORRIGIDO: usar _loadToken() ao invés de _getToken()
+    
+    final response = await http.put(
       Uri.parse('$baseUrl/games/$gameId/end'),
-      headers: _getHeaders(),
-      body: utf8.encode(jsonEncode(endData)),
+      headers: _getHeaders(),  // ✅ CORRIGIDO: usar _getHeaders() que já inclui o token
+      body: utf8.encode(jsonEncode({
+'status': 'resigned',
+      })),
     );
 
     if (response.statusCode != 200) {
-    final error = _decodeUtf8(response);
-      throw Exception(error['message'] ?? 'Erro ao finalizar jogo');
+      throw Exception('Falha ao desistir do jogo');
+    }
+  }
+
+  // ✅ NOVO: Finalizar jogo (xeque-mate, empate, afogamento)
+  Future<void> endGame(String gameId, String status, {String? winnerId, String? result}) async {
+    await _loadToken();
+    
+    final body = <String, dynamic>{
+      'status': status,
+    };
+    
+    if (winnerId != null) {
+ body['winnerId'] = winnerId;
+    }
+    
+    if (result != null) {
+      body['result'] = result;
+    }
+    
+    print('DEBUG: endGame chamado - gameId=$gameId, status=$status, winnerId=$winnerId, result=$result');
+  print('DEBUG: endGame body=$body');
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/games/$gameId/end'),
+      headers: _getHeaders(),
+      body: utf8.encode(jsonEncode(body)),
+    );
+
+    print('DEBUG: endGame response.statusCode=${response.statusCode}');
+    print('DEBUG: endGame response.body=${utf8.decode(response.bodyBytes)}');
+
+ if (response.statusCode != 200) {
+      print('DEBUG: Erro ao finalizar jogo - Status: ${response.statusCode}');
+      print('DEBUG: Response: ${utf8.decode(response.bodyBytes)}');
+      throw Exception('Falha ao finalizar jogo');
     }
   }
 

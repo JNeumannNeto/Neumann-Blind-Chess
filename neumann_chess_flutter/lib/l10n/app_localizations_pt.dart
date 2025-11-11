@@ -117,4 +117,39 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get draws => 'Empates';
+
+  @override
+  String pieceCaptured(String piece, String color) {
+    return 'Desaparece $piece $color!';
+  }
+
+  @override
+  String get kingInCheck => 'Rei em xeque!';
+
+  @override
+  String get pawnPromoted => 'Peão promovido a Dama!';
+
+  @override
+  String get piecePawn => 'peão';
+
+  @override
+  String get pieceKnight => 'cavalo';
+
+  @override
+  String get pieceBishop => 'bispo';
+
+  @override
+  String get pieceRook => 'torre';
+
+  @override
+  String get pieceQueen => 'dama';
+
+  @override
+  String get pieceKing => 'rei';
+
+  @override
+  String get colorWhite => 'branco';
+
+  @override
+  String get colorBlack => 'preto';
 }

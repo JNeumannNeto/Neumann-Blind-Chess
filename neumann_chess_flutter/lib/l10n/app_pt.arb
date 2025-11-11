@@ -61,5 +61,22 @@
   "games": "Jogos",
   "victories": "Vitórias",
   "defeats": "Derrotas",
-  "draws": "Empates"
+  "draws": "Empates",
+  "pieceCaptured": "Desaparece {piece} {color}!",
+  "@pieceCaptured": {
+    "placeholders": {
+      "piece": { "type": "String" },
+      "color": { "type": "String" }
+    }
+  },
+  "kingInCheck": "Rei em xeque!",
+  "pawnPromoted": "Peão promovido a Dama!",
+  "piecePawn": "peão",
+  "pieceKnight": "cavalo",
+  "pieceBishop": "bispo",
+  "pieceRook": "torre",
+  "pieceQueen": "dama",
+  "pieceKing": "rei",
+  "colorWhite": "branco",
+  "colorBlack": "preto"
 }

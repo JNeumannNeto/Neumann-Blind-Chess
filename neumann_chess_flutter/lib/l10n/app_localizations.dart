@@ -289,6 +289,72 @@ abstract class AppLocalizations {
   /// In pt, this message translates to:
   /// **'Empates'**
   String get draws;
+
+  /// No description provided for @pieceCaptured.
+  ///
+  /// In pt, this message translates to:
+  /// **'Desaparece {piece} {color}!'**
+  String pieceCaptured(String piece, String color);
+
+  /// No description provided for @kingInCheck.
+  ///
+  /// In pt, this message translates to:
+  /// **'Rei em xeque!'**
+  String get kingInCheck;
+
+  /// No description provided for @pawnPromoted.
+  ///
+  /// In pt, this message translates to:
+  /// **'Peão promovido a Dama!'**
+  String get pawnPromoted;
+
+  /// No description provided for @piecePawn.
+  ///
+  /// In pt, this message translates to:
+  /// **'peão'**
+  String get piecePawn;
+
+  /// No description provided for @pieceKnight.
+  ///
+  /// In pt, this message translates to:
+  /// **'cavalo'**
+  String get pieceKnight;
+
+  /// No description provided for @pieceBishop.
+  ///
+  /// In pt, this message translates to:
+  /// **'bispo'**
+  String get pieceBishop;
+
+  /// No description provided for @pieceRook.
+  ///
+  /// In pt, this message translates to:
+  /// **'torre'**
+  String get pieceRook;
+
+  /// No description provided for @pieceQueen.
+  ///
+  /// In pt, this message translates to:
+  /// **'dama'**
+  String get pieceQueen;
+
+  /// No description provided for @pieceKing.
+  ///
+  /// In pt, this message translates to:
+  /// **'rei'**
+  String get pieceKing;
+
+  /// No description provided for @colorWhite.
+  ///
+  /// In pt, this message translates to:
+  /// **'branco'**
+  String get colorWhite;
+
+  /// No description provided for @colorBlack.
+  ///
+  /// In pt, this message translates to:
+  /// **'preto'**
+  String get colorBlack;
 }
 
 class _AppLocalizationsDelegate

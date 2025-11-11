@@ -1,4 +1,4 @@
-import 'user.dart';
+﻿import 'user.dart';
 
 class Game {
   final String id;
@@ -37,7 +37,7 @@ class Game {
     // Helper para converter whitePlayer/blackPlayer/createdBy que podem ser String (ID) ou Map (objeto completo)
     User _parseUser(dynamic userData) {
       if (userData is String) {
-        // Se for apenas o ID, criar User com dados m�nimos
+        // Se for apenas o ID, criar User com dados mínimos
         return User(
           id: userData,
           username: 'Carregando...',
@@ -73,6 +73,41 @@ class Game {
       accepted: json['accepted'] ?? false,
       startedAt: json['startedAt'] != null ? DateTime.parse(json['startedAt']) : null,
       endedAt: json['endedAt'] != null ? DateTime.parse(json['endedAt']) : null,
+    );
+  }
+
+  // ✅ NOVO: Método copyWith para criar cópias com campos modificados
+  Game copyWith({
+    String? id,
+    User? whitePlayer,
+    User? blackPlayer,
+    User? createdBy,
+    String? status,
+    String? result,
+    String? winnerId,
+    String? currentFen,
+    String? currentTurn,
+    List<Move>? moves,
+    bool? isOpenChallenge,
+    bool? accepted,
+    DateTime? startedAt,
+    DateTime? endedAt,
+  }) {
+    return Game(
+      id: id ?? this.id,
+      whitePlayer: whitePlayer ?? this.whitePlayer,
+      blackPlayer: blackPlayer ?? this.blackPlayer,
+      createdBy: createdBy ?? this.createdBy,
+      status: status ?? this.status,
+      result: result ?? this.result,
+      winnerId: winnerId ?? this.winnerId,
+      currentFen: currentFen ?? this.currentFen,
+      currentTurn: currentTurn ?? this.currentTurn,
+      moves: moves ?? this.moves,
+      isOpenChallenge: isOpenChallenge ?? this.isOpenChallenge,
+      accepted: accepted ?? this.accepted,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
     );
   }
 }
