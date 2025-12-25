@@ -1,8 +1,8 @@
-# Neumann Chess Flutter
+ï»¿# Neumann Chess Flutter
 
 ## ?? Aplicativo Flutter do Neumann Blind Chess
 
-Versão mobile do jogo de Xadrez às Cegas construída com Flutter.
+VersÃ£o mobile do jogo de Xadrez Ã s Cegas construÃ­da com Flutter.
 
 ---
 
@@ -38,13 +38,13 @@ neumann_chess_flutter/
 ### **1. Instalar Flutter**
 
 ```bash
-# Verificar se Flutter está instalado
+# Verificar se Flutter estÃ¡ instalado
 flutter doctor
 
-# Se não estiver, baixe em: https://flutter.dev/
+# Se nÃ£o estiver, baixe em: https://flutter.dev/
 ```
 
-### **2. Instalar Dependências**
+### **2. Instalar DependÃªncias**
 
 ```bash
 cd neumann_chess_flutter
@@ -66,19 +66,19 @@ flutter run -d windows
 
 ---
 
-## ?? Dependências Principais
+## ?? DependÃªncias Principais
 
-| Pacote | Versão | Uso |
+| Pacote | VersÃ£o | Uso |
 |--------|--------|-----|
 | `provider` | 6.1.1 | Gerenciamento de estado |
-| `http` | 1.1.0 | Requisições HTTP |
+| `http` | 1.1.0 | RequisiÃ§Ãµes HTTP |
 | `shared_preferences` | 2.2.2 | Armazenamento local |
-| `chess` | 0.8.3 | Lógica do xadrez |
+| `chess` | 0.8.3 | LÃ³gica do xadrez |
 | `flutter_chess_board` | 1.0.1 | Tabuleiro visual |
 
 ---
 
-## ?? Configuração da API
+## ?? ConfiguraÃ§Ã£o da API
 
 Edite `lib/services/api_service.dart`:
 
@@ -86,7 +86,7 @@ Edite `lib/services/api_service.dart`:
 // Durante desenvolvimento (HTTP)
 static const String baseUrl = 'http://18.116.70.90/api';
 
-// Produção (HTTPS - depois que DNS propagar)
+// ProduÃ§Ã£o (HTTPS - depois que DNS propagar)
 static const String baseUrl = 'https://blindchess.jneumann.com.br/api';
 ```
 
@@ -96,29 +96,29 @@ static const String baseUrl = 'https://blindchess.jneumann.com.br/api';
 
 ### ? **1. Login Screen** (`login_screen.dart`)
 - Login com email/senha
-- Registro de novos usuários
-- Validação de formulários
+- Registro de novos usuÃ¡rios
+- ValidaÃ§Ã£o de formulÃ¡rios
 - Design gradiente moderno
 
 ### ?? **2. Lobby Screen** (a criar)
 
-Funcionalidades necessárias:
+Funcionalidades necessÃ¡rias:
 - Listar desafios diretos
 - Listar desafios livres
 - Criar novo desafio
 - Buscar oponentes
-- Estatísticas do usuário
+- EstatÃ­sticas do usuÃ¡rio
 - Partidas recentes
 
 ### ?? **3. Game Screen** (a criar)
 
-Funcionalidades necessárias:
+Funcionalidades necessÃ¡rias:
 - Tabuleiro de xadrez interativo
-- Ocultar peças do adversário
-- Lista de peças capturadas
-- Notificações de movimento
+- Ocultar peÃ§as do adversÃ¡rio
+- Lista de peÃ§as capturadas
+- NotificaÃ§Ãµes de movimento
 - Indicador de turno
-- Botão de desistir
+- BotÃ£o de desistir
 
 ---
 
@@ -135,7 +135,7 @@ Background: #F5F7FA (Cinza claro)
 
 ---
 
-## ?? Próximos Passos
+## ?? PrÃ³ximos Passos
 
 ### **Arquivos a Criar:**
 
@@ -200,7 +200,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
       child: ListView(
   padding: const EdgeInsets.all(16),
           children: [
-          // Estatísticas
+          // EstatÃ­sticas
             _buildStatsCard(),
      
   // Desafios Diretos
@@ -248,7 +248,7 @@ class _LobbyScreenState extends State<LobbyScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
   children: [
                 _buildStatItem('Jogos', user.stats.gamesPlayed, Colors.blue),
-        _buildStatItem('Vitórias', user.stats.gamesWon, Colors.green),
+        _buildStatItem('VitÃ³rias', user.stats.gamesWon, Colors.green),
         _buildStatItem('Derrotas', user.stats.gamesLost, Colors.red),
     _buildStatItem('Empates', user.stats.gamesDraw, Colors.orange),
  ],
@@ -345,7 +345,7 @@ class _GameScreenState extends State<GameScreen> {
     onMove: _onMove,
     ),
   
-      // Peças capturadas
+      // PeÃ§as capturadas
        _buildCapturedPieces(),
   ],
       ),
@@ -353,7 +353,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _onMove() {
-    // Implementar lógica de movimento
+    // Implementar lÃ³gica de movimento
   }
 
   Widget _buildTurnIndicator() {
@@ -362,7 +362,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   Widget _buildCapturedPieces() {
-    // Implementar lista de peças capturadas
+    // Implementar lista de peÃ§as capturadas
     return Container();
   }
 }
@@ -370,14 +370,14 @@ class _GameScreenState extends State<GameScreen> {
 
 ---
 
-## ?? Autenticação
+## ?? AutenticaÃ§Ã£o
 
 O app usa JWT tokens armazenados localmente com `shared_preferences`.
 
 **Fluxo:**
 1. Login/Registro ? Recebe token
 2. Token salvo localmente
-3. Requisições incluem token no header `Authorization: Bearer <token>`
+3. RequisiÃ§Ãµes incluem token no header `Authorization: Bearer <token>`
 4. Logout ? Remove token
 
 ---
@@ -387,19 +387,19 @@ O app usa JWT tokens armazenados localmente com `shared_preferences`.
 ### ? **Completo:**
 - [x] Estrutura do projeto
 - [x] Modelos de dados (User, Game, Move)
-- [x] Serviço de API completo
-- [x] Provider de autenticação
+- [x] ServiÃ§o de API completo
+- [x] Provider de autenticaÃ§Ã£o
 - [x] Tela de login/registro
 - [x] Main app com rotas
 
 ### ?? **A Implementar:**
 - [ ] Tela do Lobby completa
 - [ ] Tela do Jogo com tabuleiro
-- [ ] Widgets reutilizáveis
-- [ ] Notificações de movimento
-- [ ] Sons e vibrações
+- [ ] Widgets reutilizÃ¡veis
+- [ ] NotificaÃ§Ãµes de movimento
+- [ ] Sons e vibraÃ§Ãµes
 - [ ] Modo offline (cache)
-- [ ] Testes unitários
+- [ ] Testes unitÃ¡rios
 
 ---
 
@@ -433,7 +433,7 @@ app.use(cors({
 Se usar HTTPS e der erro de certificado:
 
 ```dart
-// Apenas para desenvolvimento! Nunca em produção
+// Apenas para desenvolvimento! Nunca em produÃ§Ã£o
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
@@ -451,7 +451,7 @@ void main() {
 
 ---
 
-## ?? Recursos Úteis
+## ?? Recursos Ãšteis
 
 - [Flutter Documentation](https://docs.flutter.dev/)
 - [Provider Package](https://pub.dev/packages/provider)
@@ -482,24 +482,24 @@ flutter build web --release
 
 ---
 
-## ? Próximas Melhorias
+## ? PrÃ³ximas Melhorias
 
 1. **Push Notifications** - Notificar quando for sua vez
 2. **Chat** - Conversar com oponente durante partida
 3. **Replay** - Assistir partidas antigas
-4. **Análise** - Analisar jogadas com engine
+4. **AnÃ¡lise** - Analisar jogadas com engine
 5. **Ranking** - Sistema de ELO/Rating
 6. **Torneios** - Criar e participar de torneios
 7. **Modo Offline** - Jogar contra IA localmente
-8. **Temas** - Múltiplos temas de tabuleiro
-9. **Idiomas** - Suporte multilíngue
-10. **Acessibilidade** - Narração de jogadas (TalkBack/VoiceOver)
+8. **Temas** - MÃºltiplos temas de tabuleiro
+9. **Idiomas** - Suporte multilÃ­ngue
+10. **Acessibilidade** - NarraÃ§Ã£o de jogadas (TalkBack/VoiceOver)
 
 ---
 
-## ?? Licença
+## ?? LicenÃ§a
 
-MIT License - Você pode usar, modificar e distribuir livremente.
+MIT License - VocÃª pode usar, modificar e distribuir livremente.
 
 ---
 
@@ -515,8 +515,8 @@ Desenvolvido para o projeto Neumann Blind Chess.
 
 ## ?? Suporte
 
-Para problemas ou dúvidas:
-1. Verifique a documentação acima
+Para problemas ou dÃºvidas:
+1. Verifique a documentaÃ§Ã£o acima
 2. Consulte os logs: `flutter logs`
 3. Teste a API diretamente: `curl http://18.116.70.90/api/auth/me`
 

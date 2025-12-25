@@ -5,8 +5,8 @@ import '../models/user.dart';
 import '../models/game.dart';
 
 class ApiService {
-  // ✅ URL do servidor rodando na AWS
-  static const String baseUrl = 'http://3.137.152.178:3000/api';
+  // ✅ URL com HTTPS (SSL instalado)
+  static const String baseUrl = 'https://blindchess.jneumann.com.br/api';
 
   String? _token;
 
