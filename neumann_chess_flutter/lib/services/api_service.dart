@@ -5,7 +5,8 @@ import '../models/user.dart';
 import '../models/game.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://18.116.70.90/api';
+  // ✅ URL do servidor rodando na AWS
+  static const String baseUrl = 'http://3.137.152.178:3000/api';
 
   String? _token;
 
